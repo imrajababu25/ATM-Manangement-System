@@ -1,0 +1,204 @@
+import pymysql as sql
+con=sql.connect("localhost","*","**","Axis20")          # *= Your MySql username, ** = Your MySql password, here Axis20 is my database name you can change it by yours.
+c=con.cursor()
+
+
+def Intro():
+    print("                ************************              ")
+    print("                BANK MANAGEMENT SYSTEM                ")
+    print("                ************************              ")
+    print("               Welcome to Axis bank of India          ")
+    print("\n\tMAIN MENU")
+    print("\t1.New Account")
+    print("\t2.Deposit Amount")
+    print("\t3.Withdraw Amount")
+    print("\t4.Account Enquiry")
+    print("\t5.All Account Holder list")
+    print("\t6.Close an account")
+    print("\t7.Modify an Account")
+    print("\t8.EXIT")
+    print("Select your option(1-8).")
+
+def New():
+    a=int(input("Enter Account number: "))
+    b=input("Enter name: ")
+    d = int(input("Enter amount to be deposited: **Minimum 2000 "))
+    e=input("Enter your Address")
+    f=input("Enter type of Account( 'S' for savings and 'C' for current account ")
+    if(d<2000):
+        print("Amount less than 2000 is not acceptible")
+        print("Account was not being created")
+
+
+    else:
+        q = "insert into Account values('%d','%s','%d','%s','%s')" % (a, b, d, e, f)
+        r = c.execute(q)
+        if (r > 0):
+            print("Account succesfully opened.")
+        else:
+            print("Account was not being created")
+        con.commit()
+
+def Deposit():
+    print("First Login for verifivcation.")
+    name = (input("Enter your name"))
+    ide = int(input("Enter your Account number"))
+    query = "select name,id from Account where name='%s' and id='%d'" % (name, ide)
+    run = c.execute(query)
+    if (run > 0):
+        print("login successful")
+        i = int(input("Enter Account number:"))
+        j = int(input("Enter the amount to be deposited:"))
+
+        q = "update Account set balance=balance+%d where id='%d'" % (j, i)
+        r = c.execute(q)
+        if (r > 0):
+            print("Thanks for depositing.")
+        else:
+            print("Transaction canceled.")
+        con.commit()
+    else:
+        print("Login Failed!!")
+    con.commit()
+
+def Withdraw():
+    print("First Login for verifivcation.")
+    name = (input("Enter your name"))
+    ide = int(input("Enter your Account number"))
+    query = "select name,id from Account where name='%s' and id='%d'" % (name, ide)
+    run = c.execute(query)
+    if (run > 0):
+        print("login successful")
+        i = int(input("Enter Account number:"))
+        j = int(input("Enter the amount to be withdrawn:"))
+        q = "update Account set balance=balance-%d where id='%d'" % (j, i)
+        r = c.execute(q)
+        if (r > 0):
+            print("Transaction Successful")
+        else:
+            print("Transaction Unsuccesful")
+        con.commit()
+    else:
+        print("Login failed!!")
+    con.commit()
+
+
+def Enquiry():
+    n = (input("Enter your name"))
+    i = int(input("Enter your Account number"))
+    q="select id,name,balance,address,type from account where id='%d' "%(i)
+    c.execute(q)
+    for data in c.fetchall():
+        print("Your Account  are as follows: \n Account Number= {}\t\tAccount type={}\n Name={}\t\t\t\t\tBalance={}\n Address={} ".format(data[0],data[4],data[1],data[2],data[3]))
+    con.commit()
+
+
+def Holders():
+    q = "select name from account "
+    c.execute(q)
+    for data in c.fetchall():
+        print( data)
+
+    con.commit()
+
+def Close():
+    print("First Login for verifivcation.")
+    n = (input("Enter your name"))
+    i = int(input("Enter your Account number"))
+    q = "select name,id from Account where name='%s' and id='%d'" % (n, i)
+    r = c.execute(q)
+    if (r > 0):
+        print("login successful")
+        z="delete from account where id='%d' "%(i)
+        y=c.execute(z)
+        if(y>0):
+            print("Account deleted successfully.")
+        else:
+            print("Some error occured. Account was not deleted.")
+        con.commit()
+    else:
+        print("Invalid login")
+    con.commit()
+
+def Modify():
+    print("First Login for verifivcation.")
+    n = (input("Enter your name"))
+    i = int(input("Enter your Account number"))
+    q = "select name,id from Account where name='%s' and id='%d'" % (n, i)
+    r = c.execute(q)
+    if (r > 0):
+        print("login successful")
+        print("What do you want to modify? \n 1.Name \n 2.Address \n 3.Account Type")
+        a=int(input())
+        if(a==1):
+            d=input("Enter the new name.")
+            e="update account set name='%s' where id='%d' "%(d,i)
+            f=c.execute(e)
+            if(f>0):
+                print("Account updated successfully.")
+            else:
+                print("Account was not updated.")
+            con.commit()
+                
+
+        elif(a==2):
+            d = input("Enter the new address.")
+            e = "update account set address='%s' where id='%d' " % (d, i)
+            f = c.execute(e)
+            if (f > 0):
+                print("Account updated successfully.")
+            else:
+                print("Account was not updated.")
+            con.commit()
+
+        elif(a==3):
+            d = input("Enter the new account type.")
+            e = "update account set type='%s' where id='%d' " % (d, i)
+            f = c.execute(e)
+            if (f > 0):
+                print("Account updated successfully.")
+            else:
+                print("Account was not updated.")
+            con.commit()
+
+    else:
+        print("Invalid login")
+    con.commit()
+
+
+
+
+if __name__=="__main__":
+    while (True):
+        Intro()
+        n = int(input())
+        if (n == 1):
+            New()
+        elif (n == 2):
+            print("PLease first login into your account for verifivation.")
+            Deposit()
+        elif (n == 3):
+            print("PLease first login into your account for verifivation.")
+            Withdraw()
+        elif(n==4):
+            Enquiry()
+        elif(n==5):
+            Holders()
+        elif(n==6):
+            Close()
+        elif(n==7):
+            Modify()
+        elif (n == 8):
+            break
+        else:
+            print("Invalid choice opted.")
+
+
+    print("Thank you for visiting our service. See you again, have a good day!")
+
+
+
+
+
+
+
